@@ -1,6 +1,7 @@
 import cv2
 import time
 import sys
+from screeninfo import get_monitors
 
 from ImageProcessing import FrameProcessor, ProcessingVariables
 from DisplayUtils.TileDisplay import show_img, reset_tiles
@@ -18,7 +19,6 @@ blur = ProcessingVariables.blur
 std_height = 90
 
 frameProcessor = FrameProcessor(std_height, version, True)
-
 
 def main():
     img_file = file_name
@@ -40,8 +40,17 @@ def process_image():
 
     print("Processed image in %s seconds" % (time.time() - start_time))
 
+    monitor0 = get_monitors()[0]
+    screen_h = monitor0.height
+    screen_w = monitor0.width
+    print("Screen w/h =", screen_w, screen_h)
+    window_x = 800
+    window_y = 600
+    if screen_h / 2 < window_y:
+        window_y -= 200
+
     cv2.imshow(window_name, frameProcessor.img)
-    cv2.moveWindow(window_name, 600, 600)
+    cv2.moveWindow(window_name, window_x, window_y)
 
 
 def setup_ui():
