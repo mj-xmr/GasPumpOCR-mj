@@ -6,7 +6,7 @@ from screeninfo import get_monitors
 from ImageProcessing import FrameProcessor, ProcessingVariables
 from DisplayUtils.TileDisplay import show_img, reset_tiles
 
-window_name = 'Playground'
+window_name = 'Playground (Esc quits)'
 file_name = 'tests/single_line/49A95.jpg'
 version = '_2_0'
 
