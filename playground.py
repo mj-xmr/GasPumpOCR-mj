@@ -1,6 +1,7 @@
 import cv2
 import time
 import sys
+import argparse
 from screeninfo import get_monitors
 
 from ImageProcessing import FrameProcessor, ProcessingVariables
@@ -20,15 +21,21 @@ std_height = 90
 
 frameProcessor = FrameProcessor(std_height, version, True)
 
+def GetParser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--script', default="", type=str, help="Script with a special order of filters")
+    parser.add_argument('-f', '--file',   default=file_name, type=str, help="Image file to process")
+
+    return parser
+
 def main():
-    img_file = file_name
-    if len(sys.argv) == 2:
-        img_file = sys.argv[1]
+    parser = GetParser()
+    args = parser.parse_args()
+    img_file = args.file
     frameProcessor.set_image(img_file)
     setup_ui()
     process_image()
     cv2.waitKey()
-
 
 def process_image():
     reset_tiles()
