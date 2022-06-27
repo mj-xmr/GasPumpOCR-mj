@@ -31,23 +31,23 @@ def GetParser():
 
     return parser
 
-def get_script_file(script_dir):
-    pass
+def handle_custom_script_file(script_dir):
+    if script_dir:
+        path_expected = script_dir + '/ocr_filter_module.py'
+        if not os.path.isfile(path_expected):
+            print("Not found OCR filter module:", path_expected, ". Using the default implementation.")
+            pass
+        else:
+            print("Using filter module:", path_expected)
+            sys.path.append(script_dir)
+            import ocr_filter_module
+            ocr_filter_module.test()
+            frameProcessor.set_filter_module(ocr_filter_module)
 
 def main():
     parser = GetParser()
     args = parser.parse_args()
-
-    if args.script_dir:
-        path_expected = args.script_dir + '/ocr_filter_module.py'
-        if not os.path.isfile(path_expected):
-            print("Not found OCR filter module:", path_expected, ". Using the default implementation.")
-        else:
-            print("Using filter module:", path_expected)
-            sys.path.append(args.script_dir)
-            import ocr_filter_module
-            ocr_filter_module.test()
-            frameProcessor.set_filter_module(ocr_filter_module)
+    handle_custom_script_file(args.script_dir)
 
     img_file = args.file
     frameProcessor.set_image(img_file)
