@@ -17,9 +17,13 @@ class FrameProcessor:
         self.img = None
         self.width = 0
         self.original = None
+        self.filter_module = None
         self.write_digits = write_digits
 
         self.knn = self.train_knn(self.version)
+
+    def set_filter_module(self, filter_module):
+        self.filter_module = filter_module
 
     def set_image(self, file_name):
         if not os.path.isfile(file_name):
@@ -51,39 +55,47 @@ class FrameProcessor:
 
         self.img = self.original.copy()
 
-        debug_images = []
+        if self.filter_module:
+            debug_images = self.filter_module.get_debug_images(self.original, blur, threshold, adjustment, erode, iterations)
+            inverse = debug_images[-1][1]
+            debug_images_dict = {}
+            for ele in debug_images:
+                debug_images_dict[ele[0]] = ele[1]
+            eroded = debug_images_dict['Eroded']
+        else:
+            debug_images = []
 
-        alpha = float(2.5)
+            alpha = float(2.5)
 
-        debug_images.append(('Original', self.original))
+            debug_images.append(('Original', self.original))
 
-        # Adjust the exposure
-        exposure_img = cv2.multiply(self.img, np.array([alpha]))
-        debug_images.append(('Exposure Adjust', exposure_img))
+            # Adjust the exposure
+            exposure_img = cv2.multiply(self.img, np.array([alpha]))
+            debug_images.append(('Exposure Adjust', exposure_img))
 
-        # Convert to grayscale
-        img2gray = cv2.cvtColor(exposure_img, cv2.COLOR_BGR2GRAY)
-        debug_images.append(('Grayscale', img2gray))
+            # Convert to grayscale
+            img2gray = cv2.cvtColor(exposure_img, cv2.COLOR_BGR2GRAY)
+            debug_images.append(('Grayscale', img2gray))
 
-        # Blur to reduce noise
-        img_blurred = cv2.GaussianBlur(img2gray, (blur, blur), 0)
-        debug_images.append(('Blurred', img_blurred))
+            # Blur to reduce noise
+            img_blurred = cv2.GaussianBlur(img2gray, (blur, blur), 0)
+            debug_images.append(('Blurred', img_blurred))
 
-        cropped = img_blurred
+            cropped = img_blurred
 
-        # Threshold the image
-        cropped_threshold = cv2.adaptiveThreshold(cropped, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,
-                                                  threshold, adjustment)
-        debug_images.append(('Cropped Threshold', cropped_threshold))
+            # Threshold the image
+            cropped_threshold = cv2.adaptiveThreshold(cropped, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,
+                                                      threshold, adjustment)
+            debug_images.append(('Cropped Threshold', cropped_threshold))
 
-        # Erode the lcd digits to make them continuous for easier contouring
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (erode, erode))
-        eroded = cv2.erode(cropped_threshold, kernel, iterations=iterations)
-        debug_images.append(('Eroded', eroded))
+            # Erode the lcd digits to make them continuous for easier contouring
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (erode, erode))
+            eroded = cv2.erode(cropped_threshold, kernel, iterations=iterations)
+            debug_images.append(('Eroded', eroded))
 
-        # Reverse the image to so the white text is found when looking for the contours
-        inverse = inverse_colors(eroded)
-        debug_images.append(('Inversed', inverse))
+            # Reverse the image to so the white text is found when looking for the contours
+            inverse = inverse_colors(eroded)
+            debug_images.append(('Inversed', inverse))
 
         # Find the lcd digit contours
         contours, _ = cv2.findContours(inverse, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)  # get contours

@@ -1,7 +1,9 @@
 import cv2
 import time
+import os
 import sys
 import argparse
+from pathlib import Path
 from screeninfo import get_monitors
 
 from ImageProcessing import FrameProcessor, ProcessingVariables
@@ -10,6 +12,7 @@ from DisplayUtils.TileDisplay import show_img, reset_tiles
 window_name = 'Playground (Esc quits)'
 file_name = 'tests/single_line/49A95.jpg'
 version = '_2_0'
+HOME = str(Path.home()) + "/"
 
 erode = ProcessingVariables.erode
 threshold = ProcessingVariables.threshold
@@ -23,14 +26,29 @@ frameProcessor = FrameProcessor(std_height, version, True)
 
 def GetParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--script', default="", type=str, help="Script with a special order of filters")
+    parser.add_argument('-s', '--script-dir', default=HOME,  type=str, help="Script with a special order of filters")
     parser.add_argument('-f', '--file',   default=file_name, type=str, help="Image file to process")
 
     return parser
 
+def get_script_file(script_dir):
+    pass
+
 def main():
     parser = GetParser()
     args = parser.parse_args()
+
+    if args.script_dir:
+        path_expected = args.script_dir + '/ocr_filter_module.py'
+        if not os.path.isfile(path_expected):
+            print("Not found OCR filter module:", path_expected, ". Using the default implementation.")
+        else:
+            print("Using filter module:", path_expected)
+            sys.path.append(args.script_dir)
+            import ocr_filter_module
+            ocr_filter_module.test()
+            frameProcessor.set_filter_module(ocr_filter_module)
+
     img_file = args.file
     frameProcessor.set_image(img_file)
     setup_ui()
