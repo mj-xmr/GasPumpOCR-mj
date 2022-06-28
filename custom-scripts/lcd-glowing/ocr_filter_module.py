@@ -52,10 +52,11 @@ def get_debug_images_new(image_original, blur, threshold, adjustment, erode, ite
     debug_images.append(('Original', image_original))
 
     hsv = cv2.cvtColor(image_original, cv2.COLOR_BGR2HSV)
-    lower_red = np.array([0,0,0])
+    #lower_red = np.array([0,0,0])
     #upper_red = np.array([0,255,255])
-    upper_red = np.array([0, 255, 0 ])
-
+    #https://stackoverflow.com/questions/47483951/how-to-define-a-threshold-value-to-detect-only-green-colour-objects-in-an-image
+    lower_red = np.array([40, 40,40])
+    upper_red = np.array([70, 255,255])
     mask = cv2.inRange(hsv, lower_red, upper_red)
 
     res = cv2.bitwise_and(image_original,image_original, mask= mask)
