@@ -63,7 +63,7 @@ def get_debug_images_new(image_original, params_dict, iterations):
     res = cv2.bitwise_and(image_original, image_original, mask=mask)
     debug_images.append(('Color mask', res))
     # Adjust the exposure
-    exposure_img = cv2.multiply(img, np.array([alpha]))
+    exposure_img = cv2.multiply(res, np.array([alpha]))
     debug_images.append(('Exposure Adjust', exposure_img))
 
     # Convert to grayscale
