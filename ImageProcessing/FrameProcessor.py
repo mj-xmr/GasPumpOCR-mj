@@ -51,12 +51,12 @@ class FrameProcessor:
         k_nearest.train(npa_flattened_images, cv2.ml.ROW_SAMPLE, npa_classifications)
         return k_nearest
 
-    def process_image(self, blur, threshold, adjustment, erode, iterations):
+    def process_image(self, params_dict, iterations):
 
         self.img = self.original.copy()
 
         if self.filter_module:
-            debug_images = self.filter_module.get_debug_images(self.original, blur, threshold, adjustment, erode, iterations)
+            debug_images = self.filter_module.get_debug_images(self.original, params_dict, iterations)
             inverse = debug_images[-1][1]
             debug_images_dict = {}
             for ele in debug_images:
@@ -67,6 +67,9 @@ class FrameProcessor:
 
             alpha = float(2.5)
 
+            d = params_dict
+            blur = d['blur'], threshold = d['threshold']
+            adjustment = d['adjustment'], erode = d['erode']
             debug_images.append(('Original', self.original))
 
             # Adjust the exposure

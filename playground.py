@@ -14,11 +14,18 @@ file_name = 'tests/single_line/49A95.jpg'
 version = '_2_0'
 HOME = str(Path.home()) + "/"
 
-erode = ProcessingVariables.erode
-threshold = ProcessingVariables.threshold
+blur =       ProcessingVariables.blur
+erode =      ProcessingVariables.erode
+threshold =  ProcessingVariables.threshold
 adjustment = ProcessingVariables.adjustment
 iterations = ProcessingVariables.iterations
-blur = ProcessingVariables.blur
+
+loH = ProcessingVariables.loH
+loS = ProcessingVariables.loS
+loV = ProcessingVariables.loV
+hiH = ProcessingVariables.hiH
+hiS = ProcessingVariables.hiS
+hiV = ProcessingVariables.hiV
 
 std_height = 90
 
@@ -58,7 +65,18 @@ def main():
 def process_image():
     reset_tiles()
     start_time = time.time()
-    debug_images, output = frameProcessor.process_image(blur, threshold, adjustment, erode, iterations)
+    d = {}
+    d['blur'] = blur
+    d['erode'] = erode
+    d['threshold'] = threshold
+    d['adjustment'] = adjustment
+    d['loH'] = loH
+    d['loS'] = loS
+    d['loV'] = loV
+    d['hiH'] = hiH
+    d['hiS'] = hiS
+    d['hiV'] = hiV
+    debug_images, output = frameProcessor.process_image(d, iterations)
 
     for image in debug_images:
         show_img(image[0], image[1])
@@ -80,6 +98,12 @@ def process_image():
 
 def setup_ui():
     cv2.namedWindow(window_name)
+    cv2.createTrackbar('loH', window_name, int(loH), 255, change_loH)
+    cv2.createTrackbar('loS', window_name, int(loS), 255, change_loS)
+    cv2.createTrackbar('loV', window_name, int(loV), 255, change_loV)
+    cv2.createTrackbar('hiH', window_name, int(hiH), 255, change_hiH)
+    cv2.createTrackbar('hiS', window_name, int(hiS), 255, change_hiS)
+    cv2.createTrackbar('hiV', window_name, int(hiV), 255, change_hiV)
     cv2.createTrackbar('Threshold', window_name, int(threshold), 500, change_threshold)
     cv2.createTrackbar('Iterations', window_name, int(iterations), 5, change_iterations)
     cv2.createTrackbar('Adjust', window_name, int(adjustment), 200, change_adj)
@@ -126,6 +150,35 @@ def change_threshold(x):
     threshold = x
     process_image()
 
+def change_loH(x):
+    global loH
+    loH = x
+    process_image()
+
+def change_loS(x):
+    global loS
+    loS = x
+    process_image()
+
+def change_loV(x):
+    global loV
+    loV = x
+    process_image()
+
+def change_hiH(x):
+    global hiH
+    hiH = x
+    process_image()
+
+def change_hiS(x):
+    global hiS
+    hiS = x
+    process_image()
+
+def change_hiV(x):
+    global hiV
+    hiV = x
+    process_image()
 
 if __name__ == "__main__":
     main()
