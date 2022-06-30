@@ -14,6 +14,7 @@ file_name = 'tests/single_line/49A95.jpg'
 version = '_2_0'
 HOME = str(Path.home()) + "/"
 
+exposure =   ProcessingVariables.exposure
 blur =       ProcessingVariables.blur
 erode =      ProcessingVariables.erode
 threshold =  ProcessingVariables.threshold
@@ -70,6 +71,8 @@ def process_image():
     d['erode'] = erode
     d['threshold'] = threshold
     d['adjustment'] = adjustment
+    d['exposure'] = exposure
+    
     d['loH'] = loH
     d['loS'] = loS
     d['loV'] = loV
@@ -90,7 +93,7 @@ def process_image():
     window_x = 800
     window_y = 600
     if screen_h / 2 < window_y:
-        window_y -= 200
+        window_y -= 300
 
     cv2.imshow(window_name, frameProcessor.img)
     cv2.moveWindow(window_name, window_x, window_y)
@@ -104,11 +107,18 @@ def setup_ui():
     cv2.createTrackbar('hiH', window_name, int(hiH), 255, change_hiH)
     cv2.createTrackbar('hiS', window_name, int(hiS), 255, change_hiS)
     cv2.createTrackbar('hiV', window_name, int(hiV), 255, change_hiV)
-    cv2.createTrackbar('Threshold', window_name, int(threshold), 500, change_threshold)
-    cv2.createTrackbar('Iterations', window_name, int(iterations), 5, change_iterations)
-    cv2.createTrackbar('Adjust', window_name, int(adjustment), 200, change_adj)
-    cv2.createTrackbar('Erode', window_name, int(erode), 5, change_erode)
+    cv2.createTrackbar('Exposure', window_name, int(exposure * 100), 500, change_exposure)
     cv2.createTrackbar('Blur', window_name, int(blur), 25, change_blur)
+    cv2.createTrackbar('Threshold', window_name, int(threshold), 500, change_threshold)
+    cv2.createTrackbar('Adjust', window_name, int(adjustment), 200, change_adj)
+    cv2.createTrackbar('Iterations', window_name, int(iterations), 5, change_iterations)
+    cv2.createTrackbar('Erode', window_name, int(erode), 5, change_erode)
+    
+
+def change_exposure(x):
+    global exposure
+    exposure = x/100
+    process_image()
 
 
 def change_blur(x):

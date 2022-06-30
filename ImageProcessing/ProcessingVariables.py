@@ -1,5 +1,6 @@
 class ProcessingVariables:
     erode = 2
+    exposure = 2.5
     threshold = 37
     adjustment = 11
     iterations = 3

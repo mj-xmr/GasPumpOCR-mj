@@ -43,11 +43,15 @@ def get_debug_images_new(image_original, params_dict, iterations):
     debug_images = []
 
     d = params_dict
-    alpha = float(2.5)
     img = image_original.copy()
     debug_images.append(('Original', image_original))
 
-    hsv = cv2.cvtColor(image_original, cv2.COLOR_BGR2HSV)
+    # Adjust the exposure
+    alpha = d['exposure']
+    exposure_img = cv2.multiply(image_original, np.array([alpha]))
+    debug_images.append(('Exposure Adjust', exposure_img))
+
+    hsv = cv2.cvtColor(exposure_img, cv2.COLOR_BGR2HSV)
     #https://stackoverflow.com/questions/47483951/how-to-define-a-threshold-value-to-detect-only-green-colour-objects-in-an-image
     #, blur, threshold, adjustment, erode,
     loH = d['loH']
@@ -60,14 +64,11 @@ def get_debug_images_new(image_original, params_dict, iterations):
     upper_hsv = np.array([hiH, hiS, hiV])
     mask = cv2.inRange(hsv, lower_hsv, upper_hsv)
 
-    res = cv2.bitwise_and(image_original, image_original, mask=mask)
+    res = cv2.bitwise_and(exposure_img, exposure_img, mask=mask)
     debug_images.append(('Color mask', res))
-    # Adjust the exposure
-    exposure_img = cv2.multiply(res, np.array([alpha]))
-    debug_images.append(('Exposure Adjust', exposure_img))
-
+    
     # Convert to grayscale
-    img2gray = cv2.cvtColor(exposure_img, cv2.COLOR_BGR2GRAY)
+    img2gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
     debug_images.append(('Grayscale', img2gray))
 
     # Blur to reduce noise
@@ -77,6 +78,8 @@ def get_debug_images_new(image_original, params_dict, iterations):
 
     cropped = img_blurred
 
+    # Needed for my LCD
+    cropped = inverse_colors(cropped)
     # Threshold the image
     cropped_threshold = cv2.adaptiveThreshold(cropped, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,
                                               d['threshold'], d['adjustment'])
