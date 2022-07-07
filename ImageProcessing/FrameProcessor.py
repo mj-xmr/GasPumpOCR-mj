@@ -54,6 +54,7 @@ class FrameProcessor:
     def process_image(self, params_dict, iterations):
 
         self.img = self.original.copy()
+        final_multipier = 1
 
         if self.filter_module:
             debug_images = self.filter_module.get_debug_images(self.original, params_dict, iterations)
@@ -62,6 +63,7 @@ class FrameProcessor:
             for ele in debug_images:
                 debug_images_dict[ele[0]] = ele[1]
             eroded = debug_images_dict['Eroded']
+            final_multipier = self.filter_module.get_final_number_multiplier()
         else:
             debug_images = []
 
@@ -250,12 +252,13 @@ class FrameProcessor:
                           (66, 244, 212), 2)
 
         # Log some information
+        output_float = float(output) * final_multipier
         if self.debug:
             print("Potential Digits " + str(len(potential_digits)))
             print("Potential Decimals " + str(len(potential_decimals)))
-            print("String: " + output)
+            print("String: " + output, round(output_float, 6))
 
-        return debug_images, output
+        return debug_images, output_float
 
     # Predict the digit from an image using KNN
     def predict_digit(self, digit_mat):

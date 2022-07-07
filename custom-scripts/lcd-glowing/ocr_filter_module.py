@@ -50,6 +50,9 @@ def get_desired_aspect_digit():
 def get_desired_aspect_digit_one():
     return 0.26
 
+def get_final_number_multiplier():
+    return 100
+
 def get_updated_params(params_dict):
     params_dict['erode'] = 1
 
