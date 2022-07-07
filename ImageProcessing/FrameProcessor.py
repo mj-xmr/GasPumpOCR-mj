@@ -68,8 +68,10 @@ class FrameProcessor:
             alpha = float(2.5)
 
             d = params_dict
-            blur = d['blur'], threshold = d['threshold']
-            adjustment = d['adjustment'], erode = d['erode']
+            blur = d['blur']
+            threshold = d['threshold']
+            adjustment = d['adjustment']
+            erode = d['erode']
             debug_images.append(('Original', self.original))
 
             # Adjust the exposure
@@ -117,6 +119,14 @@ class FrameProcessor:
         desired_aspect = 0.6
         # Aspect ratio for the "1" digit
         digit_one_aspect = 0.3
+        size_min = 10 * 100
+        size_min_above_one = 20 * 100
+
+        if self.filter_module:
+            size_min = self.filter_module.get_min_size_rectangle_one()
+            size_min_above_one = self.filter_module.get_min_size_rectangle_one()
+            desired_aspect = self.filter_module.get_desired_aspect_digit()
+            digit_one_aspect = self.filter_module.get_desired_aspect_digit_one()
         # The allowed buffer in the aspect when determining digits
         aspect_buffer = 0.15
 
@@ -127,13 +137,19 @@ class FrameProcessor:
 
             aspect = float(w) / h
             size = w * h
+            size_im = self.img.shape[0] * self.img.shape[1]
+            size_rel = size / size_im
+
+            print("Size =", size, ', size Rel=', size_rel,", Aspect =", aspect)
 
             # It's a square, save the contour as a potential digit
-            if size > 100 and aspect >= 1 - .3 and aspect <= 1 + .3:
+            if size > 100 and (1 - aspect_buffer <= aspect <= 1 + aspect_buffer):
                 potential_decimals.append(contour)
 
             # If it's small and it's not a square, kick it out
-            if size < 20 * 100 and (aspect < 1 - aspect_buffer and aspect > 1 + aspect_buffer):
+            if size < size_min_above_one and (1 - aspect_buffer > aspect > 1 + aspect_buffer):
+                pass
+                #print("Small size")
                 continue
 
             # Ignore any rectangles where the width is greater than the height
@@ -143,8 +159,8 @@ class FrameProcessor:
                 continue
 
             # If the contour is of decent size and fits the aspect ratios we want, we'll save it
-            if ((size > 2000 and aspect >= desired_aspect - aspect_buffer and aspect <= desired_aspect + aspect_buffer) or
-                (size > 1000 and aspect >= digit_one_aspect - aspect_buffer and aspect <= digit_one_aspect + aspect_buffer)):
+            if ((size > size_min_above_one  and desired_aspect -    aspect_buffer < aspect <= desired_aspect   + aspect_buffer) or
+                (size > size_min            and digit_one_aspect -  aspect_buffer < aspect <= digit_one_aspect + aspect_buffer)):
                 # Keep track of the height and y position so we can run averages later
                 total_digit_height += h
                 total_digit_y += y

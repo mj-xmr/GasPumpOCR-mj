@@ -14,20 +14,21 @@ file_name = 'tests/single_line/49A95.jpg'
 version = '_2_0'
 HOME = str(Path.home()) + "/"
 
-exposure =   ProcessingVariables.exposure
-blur =       ProcessingVariables.blur
-erode =      ProcessingVariables.erode
-threshold =  ProcessingVariables.threshold
-adjustment = ProcessingVariables.adjustment
-iterations = ProcessingVariables.iterations
+d = {}
+d['exposure'] = ProcessingVariables.exposure
+d['blur'] = ProcessingVariables.blur
+d['erode'] = ProcessingVariables.erode
+d['threshold'] = ProcessingVariables.threshold
+d['adjustment'] = ProcessingVariables.adjustment
+d['iterations'] = ProcessingVariables.iterations
 
-loH = ProcessingVariables.loH
-loS = ProcessingVariables.loS
-loV = ProcessingVariables.loV
-hiH = ProcessingVariables.hiH
-hiS = ProcessingVariables.hiS
-hiV = ProcessingVariables.hiV
-
+d['loH'] = ProcessingVariables.loH
+d['loS'] = ProcessingVariables.loS
+d['loV'] = ProcessingVariables.loV
+d['hiH'] = ProcessingVariables.hiH
+d['hiS'] = ProcessingVariables.hiS
+d['hiV'] = ProcessingVariables.hiV
+    
 std_height = 90
 
 frameProcessor = FrameProcessor(std_height, version, True)
@@ -66,20 +67,12 @@ def main():
 def process_image():
     reset_tiles()
     start_time = time.time()
-    d = {}
-    d['blur'] = blur
-    d['erode'] = erode
-    d['threshold'] = threshold
-    d['adjustment'] = adjustment
-    d['exposure'] = exposure
-    
-    d['loH'] = loH
-    d['loS'] = loS
-    d['loV'] = loV
-    d['hiH'] = hiH
-    d['hiS'] = hiS
-    d['hiV'] = hiV
-    debug_images, output = frameProcessor.process_image(d, iterations)
+
+    if frameProcessor.filter_module:
+        global d
+        d = frameProcessor.filter_module.get_updated_params(d)
+        
+    debug_images, output = frameProcessor.process_image(d, d['iterations'])
 
     for image in debug_images:
         show_img(image[0], image[1])
@@ -101,93 +94,81 @@ def process_image():
 
 def setup_ui():
     cv2.namedWindow(window_name)
-    cv2.createTrackbar('loH', window_name, int(loH), 255, change_loH)
-    cv2.createTrackbar('loS', window_name, int(loS), 255, change_loS)
-    cv2.createTrackbar('loV', window_name, int(loV), 255, change_loV)
-    cv2.createTrackbar('hiH', window_name, int(hiH), 255, change_hiH)
-    cv2.createTrackbar('hiS', window_name, int(hiS), 255, change_hiS)
-    cv2.createTrackbar('hiV', window_name, int(hiV), 255, change_hiV)
-    cv2.createTrackbar('Exposure', window_name, int(exposure * 100), 500, change_exposure)
-    cv2.createTrackbar('Blur', window_name, int(blur), 25, change_blur)
-    cv2.createTrackbar('Threshold', window_name, int(threshold), 500, change_threshold)
-    cv2.createTrackbar('Adjust', window_name, int(adjustment), 200, change_adj)
-    cv2.createTrackbar('Iterations', window_name, int(iterations), 5, change_iterations)
-    cv2.createTrackbar('Erode', window_name, int(erode), 5, change_erode)
+    cv2.createTrackbar('loH', window_name, int(d['loH']), 255, change_loH)
+    cv2.createTrackbar('loS', window_name, int(d['loS']), 255, change_loS)
+    cv2.createTrackbar('loV', window_name, int(d['loV']), 255, change_loV)
+    cv2.createTrackbar('hiH', window_name, int(d['hiH']), 255, change_hiH)
+    cv2.createTrackbar('hiS', window_name, int(d['hiS']), 255, change_hiS)
+    cv2.createTrackbar('hiV', window_name, int(d['hiV']), 255, change_hiV)
+    cv2.createTrackbar('Exposure', window_name, int(d['exposure'] * 100), 500, change_exposure)
+    cv2.createTrackbar('Blur', window_name, int(d['blur']), 25, change_blur)
+    cv2.createTrackbar('Threshold', window_name, int(d['threshold']), 500, change_threshold)
+    cv2.createTrackbar('Adjust', window_name, int(d['adjustment']), 200, change_adj)
+    cv2.createTrackbar('Iterations', window_name, int(d['iterations']), 5, change_iterations)
+    cv2.createTrackbar('Erode', window_name, int(d['erode']), 5, change_erode)
     
 
 def change_exposure(x):
-    global exposure
-    exposure = x/100
+    d['exposure'] = x/100
     process_image()
 
 
 def change_blur(x):
-    global blur
     print('Adjust: ' + str(x))
     if x % 2 == 0:
         x += 1
-    blur = x
+    d['blur'] = x
     process_image()
 
 
 def change_adj(x):
-    global adjustment
     print('Adjust: ' + str(x))
-    adjustment = x
+    d['adjustment'] = x
     process_image()
 
 
 def change_erode(x):
-    global erode
     print('Erode: ' + str(x))
-    erode = x
+    d['erode'] = x
     process_image()
 
 
 def change_iterations(x):
     print('Iterations: ' + str(x))
-    global iterations
-    iterations = x
+    d['iterations'] = x
     process_image()
 
 
 def change_threshold(x):
     print('Threshold: ' + str(x))
-    global threshold
-
+    
     if x % 2 == 0:
         x += 1
-    threshold = x
+    d['threshold'] = x
     process_image()
 
 def change_loH(x):
-    global loH
-    loH = x
+    d['loH'] = x
     process_image()
 
 def change_loS(x):
-    global loS
-    loS = x
+    d['loS'] = x
     process_image()
 
 def change_loV(x):
-    global loV
-    loV = x
+    d['loV'] = x
     process_image()
 
 def change_hiH(x):
-    global hiH
-    hiH = x
+    d['hiH'] = x
     process_image()
 
 def change_hiS(x):
-    global hiS
-    hiS = x
+    d['hiS'] = x
     process_image()
 
 def change_hiV(x):
-    global hiV
-    hiV = x
+    d['hiV'] = x
     process_image()
 
 if __name__ == "__main__":

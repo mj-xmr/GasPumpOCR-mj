@@ -37,12 +37,30 @@ def get_debug_images(image_original, params_dict, iterations):
     d = params_dict
     return get_debug_images_new (image_original, params_dict, iterations)
     return get_debug_images_orig(image_original, d['blur'], d['threshold'], d['adjustment'], d['erode'], iterations)
-    
+
+def get_min_size_rectangle_one():
+    return 10 * 11
+
+def get_min_size_rectangle_():
+    return 10 * 20
+
+def get_desired_aspect_digit():
+    return 0.46
+
+def get_desired_aspect_digit_one():
+    return 0.26
+
+def get_updated_params(params_dict):
+    params_dict['erode'] = 1
+
+    return params_dict
+
 def get_debug_images_new(image_original, params_dict, iterations):
     from ImageProcessing.OpenCVUtils import inverse_colors, sort_contours
     debug_images = []
 
     d = params_dict
+    
     img = image_original.copy()
     debug_images.append(('Original', image_original))
 
