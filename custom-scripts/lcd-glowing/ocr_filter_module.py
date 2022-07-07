@@ -5,6 +5,35 @@ import sys
 from pathlib import Path
 #from ImageProcessing.OpenCVUtils import inverse_colors, sort_contours
 
+def get_updated_params(params_dict):
+    params_dict['erode'] = 1
+    params_dict['angle_degrees'] = 3
+
+    return params_dict
+
+def get_min_size_rectangle_one():
+    return 10 * 11
+
+def get_min_size_rectangle_():
+    return 10 * 20
+
+def get_desired_aspect_digit():
+    return 0.46
+
+def get_desired_aspect_digit_one():
+    return 0.26
+
+def get_final_number_multiplier():
+    return 100
+
+def rotate_image(image, angle):
+    if angle == 0:
+        return image
+    image_center = tuple(np.array(image.shape[1::-1]) / 2)
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+    return result
+
 def test():
     print("test_filter_module")
     
@@ -25,6 +54,8 @@ def test2():
 
     res = cv2.bitwise_and(image_original, image_original, mask=mask)
 
+    #res = rotate_image(res, 30)
+
     #cv2.imshow('orig',image_original)
     cv2.imshow('color mask', res)
     #process_image()
@@ -38,26 +69,6 @@ def get_debug_images(image_original, params_dict, iterations):
     return get_debug_images_new (image_original, params_dict, iterations)
     return get_debug_images_orig(image_original, d['blur'], d['threshold'], d['adjustment'], d['erode'], iterations)
 
-def get_min_size_rectangle_one():
-    return 10 * 11
-
-def get_min_size_rectangle_():
-    return 10 * 20
-
-def get_desired_aspect_digit():
-    return 0.46
-
-def get_desired_aspect_digit_one():
-    return 0.26
-
-def get_final_number_multiplier():
-    return 100
-
-def get_updated_params(params_dict):
-    params_dict['erode'] = 1
-
-    return params_dict
-
 def get_debug_images_new(image_original, params_dict, iterations):
     from ImageProcessing.OpenCVUtils import inverse_colors, sort_contours
     debug_images = []
@@ -67,9 +78,12 @@ def get_debug_images_new(image_original, params_dict, iterations):
     img = image_original.copy()
     debug_images.append(('Original', image_original))
 
+    
+    rotated = rotate_image(image_original, d['angle_degrees'])
+
     # Adjust the exposure
     alpha = d['exposure']
-    exposure_img = cv2.multiply(image_original, np.array([alpha]))
+    exposure_img = cv2.multiply(rotated, np.array([alpha]))
     debug_images.append(('Exposure Adjust', exposure_img))
 
     hsv = cv2.cvtColor(exposure_img, cv2.COLOR_BGR2HSV)
