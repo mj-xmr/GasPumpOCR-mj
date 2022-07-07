@@ -106,70 +106,51 @@ def setup_ui():
     cv2.createTrackbar('Adjust', window_name, int(d['adjustment']), 200, change_adj)
     cv2.createTrackbar('Iterations', window_name, int(d['iterations']), 5, change_iterations)
     cv2.createTrackbar('Erode', window_name, int(d['erode']), 5, change_erode)
-    
+
+def change(xx, var_name):
+    print(var_name + ":", xx)
+    d[var_name] = xx
+    process_image()
 
 def change_exposure(x):
-    d['exposure'] = x/100
-    process_image()
-
+    change(x/100, 'exposure')
 
 def change_blur(x):
-    print('Adjust: ' + str(x))
     if x % 2 == 0:
         x += 1
-    d['blur'] = x
-    process_image()
-
+    change(x, 'blur')
 
 def change_adj(x):
-    print('Adjust: ' + str(x))
-    d['adjustment'] = x
-    process_image()
-
+    change(x, 'adjustment')
 
 def change_erode(x):
-    print('Erode: ' + str(x))
-    d['erode'] = x
-    process_image()
-
+    change(x, 'erode')
 
 def change_iterations(x):
-    print('Iterations: ' + str(x))
-    d['iterations'] = x
-    process_image()
-
+    change(x, 'iterations')
 
 def change_threshold(x):
-    print('Threshold: ' + str(x))
-    
     if x % 2 == 0:
         x += 1
-    d['threshold'] = x
-    process_image()
+    change(x, 'threshold')
 
 def change_loH(x):
-    d['loH'] = x
-    process_image()
+    change(x, 'loH')
 
 def change_loS(x):
-    d['loS'] = x
-    process_image()
+    change(x, 'loS')
 
 def change_loV(x):
-    d['loV'] = x
-    process_image()
+    change(x, 'loV')
 
 def change_hiH(x):
-    d['hiH'] = x
-    process_image()
+    change(x, 'hiH')
 
 def change_hiS(x):
-    d['hiS'] = x
-    process_image()
+    change(x, 'hiS')
 
 def change_hiV(x):
-    d['hiV'] = x
-    process_image()
+    change(x, 'hiV')
 
 if __name__ == "__main__":
     main()
