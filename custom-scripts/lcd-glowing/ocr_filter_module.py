@@ -8,7 +8,11 @@ from pathlib import Path
 def get_updated_params(params_dict):
     params_dict['erode'] = 1
     params_dict['angle_degrees'] = 3
-
+    
+    masks = []
+    masks.append((475, 775, 240, 190))
+    
+    params_dict['masks'] = masks
     return params_dict
 
 def get_min_size_rectangle_one():
@@ -64,12 +68,12 @@ def test2():
     # TODO: Cloee all windows?
     cv2.waitKey()
     
-def get_debug_images(image_original, params_dict, iterations):
+def get_debug_images(image_original, params_dict, iterations, scaling_factors):
     d = params_dict
-    return get_debug_images_new (image_original, params_dict, iterations)
+    return get_debug_images_new (image_original, params_dict, iterations, scaling_factors)
     return get_debug_images_orig(image_original, d['blur'], d['threshold'], d['adjustment'], d['erode'], iterations)
 
-def get_debug_images_new(image_original, params_dict, iterations):
+def get_debug_images_new(image_original, params_dict, iterations, scaling_factors):
     from ImageProcessing.OpenCVUtils import inverse_colors, sort_contours
     debug_images = []
 
@@ -79,7 +83,22 @@ def get_debug_images_new(image_original, params_dict, iterations):
     debug_images.append(('Original', image_original))
 
     
-    rotated = rotate_image(image_original, d['angle_degrees'])
+    if 'masks' in params_dict:
+        for rect in params_dict['masks']:
+            mask = np.zeros(img.shape[0:2], dtype='uint8')
+            mask.fill(255)
+            scaling_factor_x = scaling_factors[0]
+            scaling_factor_y = scaling_factors[1]
+            x = round(rect[0] * scaling_factor_x)
+            y = round(rect[1] * scaling_factor_y)
+            w = round(rect[2] * scaling_factor_x)
+            h = round(rect[3] * scaling_factor_y)
+            print(x, y, w, h)
+            mask[y:y+h,x:x+w] = 0
+            print(mask.shape, img.shape)
+            img = cv2.bitwise_and(img,img,mask=mask)
+    
+    rotated = rotate_image(img, d['angle_degrees'])
 
     # Adjust the exposure
     alpha = d['exposure']

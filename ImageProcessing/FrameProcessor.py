@@ -31,8 +31,15 @@ class FrameProcessor:
 
         self.file_name = file_name
         self.img = cv2.imread(file_name)
+        width_original  = self.img.shape[0]
+        height_original = self.img.shape[1]
         self.original, self.width = self.resize_to_height(self.height)
         self.img = self.original.copy()
+        scaling_factor_x = self.original.shape[0] / width_original
+        scaling_factor_y = self.original.shape[1] / height_original
+
+        self.scaling_factors = (scaling_factor_x, scaling_factor_y)
+        print("self.scaling_factor", self.scaling_factors)
 
     def resize_to_height(self, height):
         r = self.img.shape[0] / float(height)
@@ -57,7 +64,7 @@ class FrameProcessor:
         final_multipier = 1
 
         if self.filter_module:
-            debug_images = self.filter_module.get_debug_images(self.original, params_dict, iterations)
+            debug_images = self.filter_module.get_debug_images(self.original, params_dict, iterations, self.scaling_factors)
             inverse = debug_images[-1][1]
             debug_images_dict = {}
             for ele in debug_images:
@@ -251,8 +258,13 @@ class FrameProcessor:
                            int(avg_digit_y) + int(avg_digit_height)),
                           (66, 244, 212), 2)
 
-        # Log some information
-        output_float = float(output) * final_multipier
+        output_float = 0
+        try:
+            output_float = float(output) * final_multipier
+        except:
+            print("output failed to parse:", output)
+            pass
+        # Log some information    
         if self.debug:
             print("Potential Digits " + str(len(potential_digits)))
             print("Potential Decimals " + str(len(potential_decimals)))
