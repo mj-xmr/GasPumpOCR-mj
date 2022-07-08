@@ -89,13 +89,14 @@ def get_debug_images_new(image_original, params_dict, iterations, scaling_factor
             mask.fill(255)
             scaling_factor_x = scaling_factors[0]
             scaling_factor_y = scaling_factors[1]
+            #print("Mask original:", rect)
             x = round(rect[0] * scaling_factor_x)
             y = round(rect[1] * scaling_factor_y)
             w = round(rect[2] * scaling_factor_x)
             h = round(rect[3] * scaling_factor_y)
-            print(x, y, w, h)
+            #print("Mask scaled:", x, y, w, h)
             mask[y:y+h,x:x+w] = 0
-            print(mask.shape, img.shape)
+            #print("Mask & image shape:", mask.shape, "&", img.shape)
             img = cv2.bitwise_and(img,img,mask=mask)
     
     rotated = rotate_image(img, d['angle_degrees'])

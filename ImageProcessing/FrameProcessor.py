@@ -149,7 +149,7 @@ class FrameProcessor:
             size_im = self.img.shape[0] * self.img.shape[1]
             size_rel = size / size_im
 
-            print("Size =", size, ', size Rel=', size_rel,", Aspect =", aspect)
+            #print("Size =", size, ', size Rel=', size_rel,", Aspect =", aspect)
 
             # It's a square, save the contour as a potential digit
             if size > 100 and (1 - aspect_buffer <= aspect <= 1 + aspect_buffer):
@@ -268,7 +268,7 @@ class FrameProcessor:
         if self.debug:
             print("Potential Digits " + str(len(potential_digits)))
             print("Potential Decimals " + str(len(potential_decimals)))
-            print("String: " + output, round(output_float, 6))
+            print("String:", output, ", Transformed float:", round(output_float, 6))
 
         return debug_images, output_float
 
