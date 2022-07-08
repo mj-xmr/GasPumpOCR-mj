@@ -28,7 +28,7 @@ def get_desired_aspect_digit_one():
     return 0.26
 
 def get_final_number_multiplier():
-    return 100
+    return 0.1
 
 def rotate_image(image, angle):
     if angle == 0:

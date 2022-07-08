@@ -234,7 +234,7 @@ class FrameProcessor:
                 if self.debug:
                     cv2.rectangle(self.img, (x, y), (x + w, y + h), (66, 146, 244), 2)
 
-        decimal_x = 0
+        decimal_x = -1
         # Loop over the potential digits and find a square that's between the left/right digit x positions on the
         # lower half of the screen
         for pot_decimal in potential_decimals:
@@ -246,7 +246,7 @@ class FrameProcessor:
 
         # Once we know the position of the decimal, we'll insert it into our string
         for ix, digit_x in enumerate(digit_x_positions):
-            if digit_x > decimal_x:
+            if digit_x > decimal_x and decimal_x >= 0:
                 # insert
                 output = output[:ix] + '.' + output[ix:]
                 break
