@@ -49,7 +49,7 @@ def handle_custom_script_file(script_dir):
         else:
             print("Using filter module:", path_expected)
             sys.path.append(script_dir)
-            import ocr_filter_module
+            import ocr_filter_module # For this reason, the script filename must be fixed
             ocr_filter_module.test()
             frameProcessor.set_filter_module(ocr_filter_module)
             global d
