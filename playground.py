@@ -52,6 +52,8 @@ def handle_custom_script_file(script_dir):
             import ocr_filter_module
             ocr_filter_module.test()
             frameProcessor.set_filter_module(ocr_filter_module)
+            global d
+            d = frameProcessor.filter_module.get_updated_params(d)
 
 def main():
     parser = GetParser()
@@ -68,10 +70,6 @@ def process_image():
     reset_tiles()
     start_time = time.time()
 
-    if frameProcessor.filter_module:
-        global d
-        d = frameProcessor.filter_module.get_updated_params(d)
-        
     debug_images, output = frameProcessor.process_image(d, d['iterations'])
 
     for image in debug_images:
