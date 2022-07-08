@@ -30,6 +30,41 @@ def rotate_image_simple(image, angle):
     result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
     return result
 
+def mask_image_rect(img, mask_xywh, scaling_factors, foreground=0, background=255):
+    mask = np.zeros(img.shape[0:2], dtype='uint8')
+    mask.fill(background)
+    scaling_factor_x = scaling_factors[0]
+    scaling_factor_y = scaling_factors[1]
+    #print("Mask original:", rect)
+    x = round(mask_xywh[0] * scaling_factor_x)
+    y = round(mask_xywh[1] * scaling_factor_y)
+    w = round(mask_xywh[2] * scaling_factor_x)
+    h = round(mask_xywh[3] * scaling_factor_y)
+    #print("Mask scaled:", x, y, w, h)
+    mask[y:y+h,x:x+w] = foreground
+    #print("Mask & image shape:", mask.shape, "&", img.shape)
+    img = cv2.bitwise_and(img,img,mask=mask)
+    return img
+
+def mask_image_hsv(img, loH, loS, loV, hiH, hiS, hiV):
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    #https://stackoverflow.com/questions/47483951/how-to-define-a-threshold-value-to-detect-only-green-colour-objects-in-an-image
+    lower_hsv = np.array([loH, loS, loV])
+    upper_hsv = np.array([hiH, hiS, hiV])
+    mask = cv2.inRange(hsv, lower_hsv, upper_hsv)
+    masked = cv2.bitwise_and(img, img, mask=mask)
+
+    return masked
+
+def mask_image_hsv_dict(img, d):
+    loH = d['loH']
+    loS = d['loS']
+    loV = d['loV']
+    hiH = d['hiH']
+    hiS = d['hiS']
+    hiV = d['hiV']
+
+    return mask_image_hsv(img, loH, loS, loV, hiH, hiS, hiV)
 
 def inverse_colors(img):
     img = (255 - img)

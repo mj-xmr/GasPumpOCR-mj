@@ -65,7 +65,7 @@ def get_debug_images(image_original, params_dict, iterations, scaling_factors):
     return get_debug_images_orig(image_original, d['blur'], d['threshold'], d['adjustment'], d['erode'], iterations)
 
 def get_debug_images_new(image_original, params_dict, iterations, scaling_factors):
-    from ImageProcessing.OpenCVUtils import inverse_colors, sort_contours, rotate_image_simple
+    from ImageProcessing.OpenCVUtils import inverse_colors, mask_image_rect, mask_image_hsv_dict, rotate_image_simple
     debug_images = []
 
     d = params_dict
@@ -73,23 +73,10 @@ def get_debug_images_new(image_original, params_dict, iterations, scaling_factor
     img = image_original.copy()
     debug_images.append(('Original', image_original))
 
-    
     if 'masks' in params_dict:
         for rect in params_dict['masks']:
-            mask = np.zeros(img.shape[0:2], dtype='uint8')
-            mask.fill(255)
-            scaling_factor_x = scaling_factors[0]
-            scaling_factor_y = scaling_factors[1]
-            #print("Mask original:", rect)
-            x = round(rect[0] * scaling_factor_x)
-            y = round(rect[1] * scaling_factor_y)
-            w = round(rect[2] * scaling_factor_x)
-            h = round(rect[3] * scaling_factor_y)
-            #print("Mask scaled:", x, y, w, h)
-            mask[y:y+h,x:x+w] = 0
-            #print("Mask & image shape:", mask.shape, "&", img.shape)
-            img = cv2.bitwise_and(img,img,mask=mask)
-    
+            img = mask_image_rect(img, rect, scaling_factors, 0, 255) 
+
     rotated = rotate_image_simple(img, d['angle_degrees'])
 
     # Adjust the exposure
@@ -97,24 +84,11 @@ def get_debug_images_new(image_original, params_dict, iterations, scaling_factor
     exposure_img = cv2.multiply(rotated, np.array([alpha]))
     debug_images.append(('Exposure Adjust', exposure_img))
 
-    hsv = cv2.cvtColor(exposure_img, cv2.COLOR_BGR2HSV)
-    #https://stackoverflow.com/questions/47483951/how-to-define-a-threshold-value-to-detect-only-green-colour-objects-in-an-image
-    #, blur, threshold, adjustment, erode,
-    loH = d['loH']
-    loS = d['loS']
-    loV = d['loV']
-    hiH = d['hiH']
-    hiS = d['hiS']
-    hiV = d['hiV']
-    lower_hsv = np.array([loH, loS, loV])
-    upper_hsv = np.array([hiH, hiS, hiV])
-    mask = cv2.inRange(hsv, lower_hsv, upper_hsv)
+    hsv_masked = mask_image_hsv_dict(exposure_img, d)
+    debug_images.append(('Color mask', hsv_masked))
 
-    res = cv2.bitwise_and(exposure_img, exposure_img, mask=mask)
-    debug_images.append(('Color mask', res))
-    
     # Convert to grayscale
-    img2gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
+    img2gray = cv2.cvtColor(hsv_masked, cv2.COLOR_BGR2GRAY)
     debug_images.append(('Grayscale', img2gray))
 
     # Blur to reduce noise
