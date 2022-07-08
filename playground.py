@@ -113,9 +113,13 @@ def change(xx, var_name):
 def change_exposure(x):
     change(x/100, 'exposure')
 
-def change_blur(x):
+def maintain_odd(x):
     if x % 2 == 0:
         x += 1
+    return x
+
+def change_blur(x):
+    x = maintain_odd(x)
     change(x, 'blur')
 
 def change_adj(x):
@@ -128,8 +132,7 @@ def change_iterations(x):
     change(x, 'iterations')
 
 def change_threshold(x):
-    if x % 2 == 0:
-        x += 1
+    x = maintain_odd(x)
     change(x, 'threshold')
 
 def change_loH(x):
