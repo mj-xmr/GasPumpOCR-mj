@@ -3,7 +3,6 @@ import numpy as np
 import os
 import sys
 from pathlib import Path
-#from ImageProcessing.OpenCVUtils import inverse_colors, sort_contours
 
 def get_updated_params(params_dict):
     params_dict['erode'] = 1
@@ -29,14 +28,6 @@ def get_desired_aspect_digit_one():
 
 def get_final_number_multiplier():
     return 0.1
-
-def rotate_image(image, angle):
-    if angle == 0:
-        return image
-    image_center = tuple(np.array(image.shape[1::-1]) / 2)
-    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
-    return result
 
 def test():
     print("test_filter_module")
@@ -74,7 +65,7 @@ def get_debug_images(image_original, params_dict, iterations, scaling_factors):
     return get_debug_images_orig(image_original, d['blur'], d['threshold'], d['adjustment'], d['erode'], iterations)
 
 def get_debug_images_new(image_original, params_dict, iterations, scaling_factors):
-    from ImageProcessing.OpenCVUtils import inverse_colors, sort_contours
+    from ImageProcessing.OpenCVUtils import inverse_colors, sort_contours, rotate_image_simple
     debug_images = []
 
     d = params_dict
@@ -99,7 +90,7 @@ def get_debug_images_new(image_original, params_dict, iterations, scaling_factor
             #print("Mask & image shape:", mask.shape, "&", img.shape)
             img = cv2.bitwise_and(img,img,mask=mask)
     
-    rotated = rotate_image(img, d['angle_degrees'])
+    rotated = rotate_image_simple(img, d['angle_degrees'])
 
     # Adjust the exposure
     alpha = d['exposure']

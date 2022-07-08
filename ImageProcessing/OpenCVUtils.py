@@ -1,6 +1,6 @@
 import cv2
 import math
-
+import numpy as np
 
 # http://stackoverflow.com/questions/22041699/rotate-an-image-without-cropping-in-opencv-in-c/33564950#33564950
 def rotate_image(mat, angle):
@@ -20,6 +20,15 @@ def rotate_image(mat, angle):
 
     rotated_mat = cv2.warpAffine(mat, rotation_mat, (bound_w, bound_h), borderValue=(255, 255, 255))
     return rotated_mat
+
+
+def rotate_image_simple(image, angle):
+    if angle == 0:
+        return image
+    image_center = tuple(np.array(image.shape[1::-1]) / 2)
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+    return result
 
 
 def inverse_colors(img):
