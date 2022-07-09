@@ -65,7 +65,7 @@ def get_detection(file, script_dir):
     return output
 
 def main(file, script_dir):
-    get_detection(file, script_dir)
+    return get_detection(file, script_dir)
 
 if __name__ == "__main__":
     parser = get_arg_parser()
