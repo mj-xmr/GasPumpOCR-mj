@@ -11,8 +11,6 @@ from DisplayUtils.TileDisplay import show_img, reset_tiles
 import headless
 
 window_name = 'Playground (Esc quits)'
-version = '_2_0'
-
 d = headless.d
 
 def get_arg_parser():
