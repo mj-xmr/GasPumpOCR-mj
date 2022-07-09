@@ -8,60 +8,21 @@ from screeninfo import get_monitors
 
 from ImageProcessing import FrameProcessor, ProcessingVariables
 from DisplayUtils.TileDisplay import show_img, reset_tiles
+import headless
 
 window_name = 'Playground (Esc quits)'
-file_name = 'tests/single_line/49A95.jpg'
 version = '_2_0'
-HOME = str(Path.home()) + "/"
 
-d = {}
-d['exposure'] = ProcessingVariables.exposure
-d['blur'] = ProcessingVariables.blur
-d['erode'] = ProcessingVariables.erode
-d['threshold'] = ProcessingVariables.threshold
-d['adjustment'] = ProcessingVariables.adjustment
-d['iterations'] = ProcessingVariables.iterations
+d = headless.d
 
-d['loH'] = ProcessingVariables.loH
-d['loS'] = ProcessingVariables.loS
-d['loV'] = ProcessingVariables.loV
-d['hiH'] = ProcessingVariables.hiH
-d['hiS'] = ProcessingVariables.hiS
-d['hiV'] = ProcessingVariables.hiV
-    
-std_height = 90
-
-frameProcessor = FrameProcessor(std_height, version, True)
-
-def GetParser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--script-dir', default=HOME,  type=str, help="Script with a special order of filters")
-    parser.add_argument('-f', '--file',   default=file_name, type=str, help="Image file to process")
-
+def get_arg_parser():
+    parser = headless.get_arg_parser()
     return parser
 
-def handle_custom_script_file(script_dir):
-    if script_dir:
-        path_expected = script_dir + '/ocr_filter_module.py'
-        if not os.path.isfile(path_expected):
-            print("Not found OCR filter module:", path_expected, ". Using the default implementation.")
-            pass
-        else:
-            print("Using filter module:", path_expected)
-            sys.path.append(script_dir)
-            import ocr_filter_module # For this reason, the script filename must be fixed
-            ocr_filter_module.test()
-            frameProcessor.set_filter_module(ocr_filter_module)
-            global d
-            d = frameProcessor.filter_module.get_updated_params(d)
-
 def main():
-    parser = GetParser()
+    parser = get_arg_parser()
     args = parser.parse_args()
-    handle_custom_script_file(args.script_dir)
-
-    img_file = args.file
-    frameProcessor.set_image(img_file)
+    headless.setup(args.file, args.script_dir)
     setup_ui()
     process_image()
     cv2.waitKey()
@@ -70,7 +31,7 @@ def process_image():
     reset_tiles()
     start_time = time.time()
 
-    debug_images, output = frameProcessor.process_image(d, d['iterations'])
+    debug_images, output = headless.frameProcessor.process_image(d, d['iterations'])
 
     for image in debug_images:
         show_img(image[0], image[1])
@@ -86,7 +47,7 @@ def process_image():
     if screen_h / 2 < window_y:
         window_y -= 300
 
-    cv2.imshow(window_name, frameProcessor.img)
+    cv2.imshow(window_name, headless.frameProcessor.img)
     cv2.moveWindow(window_name, window_x, window_y)
 
 
