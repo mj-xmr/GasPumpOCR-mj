@@ -137,7 +137,7 @@ class FrameProcessor:
             desired_aspect = self.filter_module.get_desired_aspect_digit()
             digit_one_aspect = self.filter_module.get_desired_aspect_digit_one()
         # The allowed buffer in the aspect when determining digits
-        aspect_buffer = 0.15
+        aspect_buffer = 0.20
 
         # Loop over all the contours collecting potential digits and decimals
         for contour in contours:
