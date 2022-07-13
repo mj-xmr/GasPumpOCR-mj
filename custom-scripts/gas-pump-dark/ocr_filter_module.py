@@ -23,7 +23,7 @@ def get_final_number_multiplier():
     return 1
 
 def test():
-    print("test_filter_module")
+    print("test OCR filter_module gas pump")
     
 def get_debug_images(image_original, params_dict, iterations, scaling_factors):
     d = params_dict

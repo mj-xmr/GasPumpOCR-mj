@@ -30,7 +30,7 @@ def get_final_number_multiplier():
     return 0.1
 
 def test():
-    print("test_filter_module")
+    print("test OCR filter_module glowing lcd")
     
 def test2():
     print("Test")
@@ -98,7 +98,7 @@ def get_debug_images_new(image_original, params_dict, iterations, scaling_factor
 
     cropped = img_blurred
 
-    # Needed for my LCD
+    # Need to inverse the glowing LCDs first,
     cropped = inverse_colors(cropped)
     # Threshold the image
     cropped_threshold = cv2.adaptiveThreshold(cropped, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,
