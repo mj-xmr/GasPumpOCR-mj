@@ -28,7 +28,7 @@ d['hiV'] = ProcessingVariables.hiV
     
 std_height = 90
 
-frameProcessor = FrameProcessor(std_height, version, True)
+frameProcessor = None
 
 def get_arg_parser():
     parser = argparse.ArgumentParser()
@@ -53,6 +53,8 @@ def handle_custom_script_file(script_dir):
             d = frameProcessor.filter_module.get_updated_params(d)
 
 def setup(file, script_dir):
+    global frameProcessor
+    frameProcessor = FrameProcessor(std_height, version, True)
     handle_custom_script_file(script_dir)
     img_file = file
     frameProcessor.set_image(img_file)
