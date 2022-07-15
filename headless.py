@@ -4,6 +4,7 @@ import os
 import sys
 import argparse
 from pathlib import Path
+import importlib
 
 from ImageProcessing import FrameProcessor, ProcessingVariables
 
@@ -45,8 +46,9 @@ def handle_custom_script_file(script_dir):
             pass
         else:
             print("Using filter module:", path_expected)
-            sys.path.append(script_dir)
+            sys.path.insert(0, script_dir)
             import ocr_filter_module # For this reason, the script filename must be fixed
+            importlib.reload(ocr_filter_module)
             ocr_filter_module.test()
             frameProcessor.set_filter_module(ocr_filter_module)
             global d
