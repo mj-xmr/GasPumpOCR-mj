@@ -13,22 +13,7 @@ version = '_2_0'
 HOME = str(Path.home()) + "/"
 
 d = {}
-d['exposure'] = ProcessingVariables.exposure
-d['blur'] = ProcessingVariables.blur
-d['erode'] = ProcessingVariables.erode
-d['threshold'] = ProcessingVariables.threshold
-d['adjustment'] = ProcessingVariables.adjustment
-d['iterations'] = ProcessingVariables.iterations
-
-d['loH'] = ProcessingVariables.loH
-d['loS'] = ProcessingVariables.loS
-d['loV'] = ProcessingVariables.loV
-d['hiH'] = ProcessingVariables.hiH
-d['hiS'] = ProcessingVariables.hiS
-d['hiV'] = ProcessingVariables.hiV
-    
 std_height = 90
-
 frameProcessor = None
 
 def get_arg_parser():
@@ -38,6 +23,22 @@ def get_arg_parser():
 
     return parser
 
+def init_params():
+    global d
+    d['exposure'] = ProcessingVariables.exposure
+    d['blur'] = ProcessingVariables.blur
+    d['erode'] = ProcessingVariables.erode
+    d['threshold'] = ProcessingVariables.threshold
+    d['adjustment'] = ProcessingVariables.adjustment
+    d['iterations'] = ProcessingVariables.iterations
+
+    d['loH'] = ProcessingVariables.loH
+    d['loS'] = ProcessingVariables.loS
+    d['loV'] = ProcessingVariables.loV
+    d['hiH'] = ProcessingVariables.hiH
+    d['hiS'] = ProcessingVariables.hiS
+    d['hiV'] = ProcessingVariables.hiV
+    
 def handle_custom_script_file(script_dir):
     if script_dir:
         path_expected = script_dir + '/ocr_filter_module.py'
@@ -56,6 +57,7 @@ def handle_custom_script_file(script_dir):
 
 def setup(file, script_dir):
     global frameProcessor
+    init_params()
     frameProcessor = FrameProcessor(std_height, version, True)
     handle_custom_script_file(script_dir)
     img_file = file
