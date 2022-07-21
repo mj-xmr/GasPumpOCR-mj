@@ -6,37 +6,45 @@ from pathlib import Path
 
 def get_updated_params(params_dict):
     params_dict['erode'] = 1
-    params_dict['angle_degrees'] = 3
+    params_dict['blur'] = 1
+    params_dict['exposure'] = 1.0
+    params_dict['loS'] = 0
+    params_dict['loV'] = 85
+    params_dict['hiS'] = 11
+    params_dict['hiV'] = 255
+    
+    #params_dict['angle_degrees'] = 0
     
     masks = []
-    masks.append((475, 775, 240, 190))
+    masks.append((320, 0, 320, 480))
     
     params_dict['masks'] = masks
     return params_dict
 
 def get_min_size_rectangle_one():
-    return 10 * 11
+    return 20
 
 def get_min_size_rectangle_():
-    return 10 * 20
+    return 20
 
 def get_desired_aspect_digit():
-    return 0.46
+    return 1.65
 
 def get_desired_aspect_digit_one():
-    return 0.26
+    return 0.3
 
 def get_final_number_multiplier():
-    return 0.1
+    return 1
 
 def filter_wh():
-    return True
+    return False
 
 def get_countours_to_percentage_full(num_countours):
-    return -100
+    calc = (num_countours - 1) / 5 * 100
+    return calc
 
 def test():
-    print("test OCR filter_module glowing lcd")
+    print("test OCR filter_module Panel Rectangles")
     
 def test2():
     print("Test")
@@ -83,11 +91,12 @@ def get_debug_images_new(image_original, params_dict, iterations, scaling_factor
         for rect in params_dict['masks']:
             img = mask_image_rect(img, rect, scaling_factors, 0, 255) 
 
-    rotated = rotate_image_simple(img, d['angle_degrees'])
+    if 'angle_degrees' in d:
+        img = rotate_image_simple(img, d['angle_degrees'])
 
     # Adjust the exposure
     alpha = d['exposure']
-    exposure_img = cv2.multiply(rotated, np.array([alpha]))
+    exposure_img = cv2.multiply(img, np.array([alpha]))
     debug_images.append(('Exposure Adjust', exposure_img))
 
     hsv_masked = mask_image_hsv_dict(exposure_img, d)

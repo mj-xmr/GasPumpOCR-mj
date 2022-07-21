@@ -29,19 +29,20 @@ def process_image():
     reset_tiles()
     start_time = time.time()
 
-    debug_images, output = headless.frameProcessor.process_image(d, d['iterations'])
+    debug_images, output, percent_full = headless.frameProcessor.process_image(d, d['iterations'])
 
     for image in debug_images:
         show_img(image[0], image[1])
 
     print("Processed image in %s seconds" % (time.time() - start_time))
+    print("Output:", output, " % full:", percent_full)
 
     monitor0 = get_monitors()[0]
     screen_h = monitor0.height
     screen_w = monitor0.width
     print("Screen w/h =", screen_w, screen_h)
     window_x = 800
-    window_y = 600
+    window_y = 450
     if screen_h / 2 < window_y:
         window_y -= 300
 

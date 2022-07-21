@@ -62,6 +62,8 @@ class FrameProcessor:
 
         self.img = self.original.copy()
         final_multipier = 1
+        countours_to_percentage_function = None
+        filter_wh = True
 
         if self.filter_module:
             debug_images = self.filter_module.get_debug_images(self.original, params_dict, iterations, self.scaling_factors)
@@ -71,6 +73,8 @@ class FrameProcessor:
                 debug_images_dict[ele[0]] = ele[1]
             eroded = debug_images_dict['Eroded']
             final_multipier = self.filter_module.get_final_number_multiplier()
+            countours_to_percentage_function = self.filter_module.get_countours_to_percentage_full
+            filter_wh = self.filter_module.filter_wh()
         else:
             debug_images = []
 
@@ -158,24 +162,28 @@ class FrameProcessor:
             # If it's small and it's not a square, kick it out
             if size < size_min_above_one and (1 - aspect_buffer > aspect > 1 + aspect_buffer):
                 pass
-                #print("Small size")
+                #print("Small size", size)
                 continue
+
+            
 
             # Ignore any rectangles where the width is greater than the height
             if w > h:
                 if self.debug:
-                    cv2.rectangle(self.img, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                continue
+                    cv2.rectangle(self.img, (x, y), (x + w, y + h), (0, 150, 255), 2)
+                if filter_wh:
+                    continue
 
             # If the contour is of decent size and fits the aspect ratios we want, we'll save it
-            if ((size > size_min_above_one  and desired_aspect -    aspect_buffer < aspect <= desired_aspect   + aspect_buffer) or
-                (size > size_min            and digit_one_aspect -  aspect_buffer < aspect <= digit_one_aspect + aspect_buffer)):
+            if ((size >= size_min_above_one  and desired_aspect -    aspect_buffer < aspect <= desired_aspect   + aspect_buffer) or
+                (size >= size_min            and digit_one_aspect -  aspect_buffer < aspect <= digit_one_aspect + aspect_buffer)):
                 # Keep track of the height and y position so we can run averages later
                 total_digit_height += h
                 total_digit_y += y
                 potential_digits.append(contour)
             else:
                 if self.debug:
+                    print("size", size, ", size_min_above_one", size_min_above_one, ", aspect:", aspect)
                     cv2.rectangle(self.img, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
         avg_digit_height = 0
@@ -264,13 +272,19 @@ class FrameProcessor:
         except:
             print("output failed to parse:", output)
             pass
+
+        percentage_full = -100
+        if countours_to_percentage_function:
+            percentage_full = countours_to_percentage_function(len(potential_digits))
+        
         # Log some information    
         if self.debug:
             print("Potential Digits " + str(len(potential_digits)))
             print("Potential Decimals " + str(len(potential_decimals)))
             print("String:", output, ", Transformed float:", round(output_float, 6))
+            print("Percentage full:", percentage_full)
 
-        return debug_images, output_float
+        return debug_images, output_float, percentage_full
 
     # Predict the digit from an image using KNN
     def predict_digit(self, digit_mat):

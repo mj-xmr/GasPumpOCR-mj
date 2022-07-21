@@ -22,6 +22,12 @@ def get_desired_aspect_digit_one():
 def get_final_number_multiplier():
     return 1
 
+def filter_wh():
+    return True
+
+def get_countours_to_percentage_full(num_countours):
+    return -100
+
 def test():
     print("test OCR filter_module gas pump")
     

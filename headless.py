@@ -25,6 +25,7 @@ def get_arg_parser():
 
 def init_params():
     global d
+    d = {}
     d['exposure'] = ProcessingVariables.exposure
     d['blur'] = ProcessingVariables.blur
     d['erode'] = ProcessingVariables.erode
@@ -66,9 +67,9 @@ def setup(file, script_dir):
 def get_detection(file, script_dir):
     start_time = time.time()
     setup(file, script_dir)
-    debug_images, output = frameProcessor.process_image(d, d['iterations'])
+    debug_images, output, percent_full = frameProcessor.process_image(d, d['iterations'])
     print("Processed image in %s seconds" % (time.time() - start_time))
-    return output
+    return output, percent_full
 
 def main(file, script_dir):
     return get_detection(file, script_dir)
