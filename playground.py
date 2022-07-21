@@ -11,7 +11,6 @@ from DisplayUtils.TileDisplay import show_img, reset_tiles
 import headless
 
 window_name = 'Playground (Esc quits)'
-d = headless.d
 
 def get_arg_parser():
     parser = headless.get_arg_parser()
@@ -28,6 +27,7 @@ def main():
 def process_image():
     reset_tiles()
     start_time = time.time()
+    d = headless.d
 
     debug_images, output, percent_full = headless.frameProcessor.process_image(d, d['iterations'])
 
@@ -52,6 +52,7 @@ def process_image():
 
 def setup_ui():
     cv2.namedWindow(window_name)
+    d = headless.d
     cv2.createTrackbar('loH', window_name, int(d['loH']), 255, change_loH)
     cv2.createTrackbar('loS', window_name, int(d['loS']), 255, change_loS)
     cv2.createTrackbar('loV', window_name, int(d['loV']), 255, change_loV)
