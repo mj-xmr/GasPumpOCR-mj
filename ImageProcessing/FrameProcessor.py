@@ -67,6 +67,14 @@ class FrameProcessor:
         params_dict_ir['filter_width>height']       = True
         params_dict_ir[key_countours_function]      = None
 
+        # Aspect ratio for all non 1 character digits
+        params_dict_ir['desired_aspect_digit'] = 0.6
+        # Aspect ratio for the "1" digit
+        params_dict_ir['desired_aspect_digit_one'] = 0.3
+        params_dict_ir['min_size_rectangle_one'] = 10 * 100
+        params_dict_ir['min_size_rectangle'] = 20 * 100
+        params_dict_ir['aspect_buffer'] = 0.20
+
         if self.filter_module:
             debug_images = self.filter_module.get_debug_images(self.original, params_dict, iterations, self.scaling_factors)
             inverse = debug_images[-1][1]
@@ -130,20 +138,11 @@ class FrameProcessor:
         total_digit_height = 0
         total_digit_y = 0
 
-        # Aspect ratio for all non 1 character digits
-        desired_aspect = 0.6
-        # Aspect ratio for the "1" digit
-        digit_one_aspect = 0.3
-        size_min = 10 * 100
-        size_min_above_one = 20 * 100
-
-        if self.filter_module:
-            size_min = params_dict_ir['min_size_rectangle_one']
-            size_min_above_one = params_dict_ir['min_size_rectangle']
-            desired_aspect = params_dict_ir['desired_aspect_digit']
-            digit_one_aspect = params_dict_ir['desired_aspect_digit_one']
-        # The allowed buffer in the aspect when determining digits
-        aspect_buffer = 0.20
+        size_min = params_dict_ir['min_size_rectangle_one']
+        size_min_above_one = params_dict_ir['min_size_rectangle']
+        desired_aspect = params_dict_ir['desired_aspect_digit']
+        digit_one_aspect = params_dict_ir['desired_aspect_digit_one']
+        aspect_buffer = params_dict_ir['aspect_buffer']
 
         # Loop over all the contours collecting potential digits and decimals
         for contour in contours:
