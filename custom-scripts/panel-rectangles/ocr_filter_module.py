@@ -40,7 +40,9 @@ def filter_wh():
     return False
 
 def get_countours_to_percentage_full(num_countours):
-    calc = (num_countours - 1) / 5 * 100
+    irrelevant_countours = 1    # The "power on" countour, that has to be subtracted.
+    all_relevant_countours = 5  # The total number of countours representing the max charge.
+    calc = (num_countours - irrelevant_countours) / all_relevant_countours * 100
     return calc
 
 def test():
