@@ -4,29 +4,16 @@ import os
 import sys
 from pathlib import Path
 
-def get_updated_params(params_dict):
+def get_updated_params_image_processing(params_dict):
     return params_dict
 
-def get_min_size_rectangle_one():
-    return 100 * 10
+def get_updated_params_image_recognition(params_dict_ir):
+    params_dict_ir['min_size_rectangle_one']    = 100 * 10
+    params_dict_ir['min_size_rectangle']        = 100 * 20
+    params_dict_ir['desired_aspect_digit_one']  = 0.3
+    params_dict_ir['desired_aspect_digit']      = 0.6
 
-def get_min_size_rectangle_():
-    return 100 * 20
-
-def get_desired_aspect_digit():
-    return 0.6
-
-def get_desired_aspect_digit_one():
-    return 0.3
-
-def get_final_number_multiplier():
-    return 1
-
-def filter_wh():
-    return True
-
-def get_countours_to_percentage_full(num_countours):
-    return -100
+    return params_dict_ir
 
 def test():
     print("test OCR filter_module gas pump")

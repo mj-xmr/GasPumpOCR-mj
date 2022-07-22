@@ -49,12 +49,16 @@ def handle_custom_script_file(script_dir):
         else:
             print("Using filter module:", path_expected)
             sys.path.insert(0, script_dir)
+            if frameProcessor.filter_module:
+                # This should work, but has not effect:
+                #del ocr_filter_module
+                pass
             import ocr_filter_module # For this reason, the script filename must be fixed
             importlib.reload(ocr_filter_module)
             ocr_filter_module.test()
             frameProcessor.set_filter_module(ocr_filter_module)
             global d
-            d = frameProcessor.filter_module.get_updated_params(d)
+            d = frameProcessor.filter_module.get_updated_params_image_processing(d)
 
 def setup(file, script_dir):
     global frameProcessor

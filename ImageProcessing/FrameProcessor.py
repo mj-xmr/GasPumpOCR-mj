@@ -61,9 +61,11 @@ class FrameProcessor:
     def process_image(self, params_dict, iterations):
 
         self.img = self.original.copy()
-        final_multipier = 1
-        countours_to_percentage_function = None
-        filter_wh = True
+        params_dict_ir = {}
+        key_countours_function = 'countours_to_percentage_function'
+        params_dict_ir['final_number_multiplier']   = 1
+        params_dict_ir['filter_width>height']       = True
+        params_dict_ir[key_countours_function]      = None
 
         if self.filter_module:
             debug_images = self.filter_module.get_debug_images(self.original, params_dict, iterations, self.scaling_factors)
@@ -72,9 +74,9 @@ class FrameProcessor:
             for ele in debug_images:
                 debug_images_dict[ele[0]] = ele[1]
             eroded = debug_images_dict['Eroded']
-            final_multipier = self.filter_module.get_final_number_multiplier()
-            countours_to_percentage_function = self.filter_module.get_countours_to_percentage_full
-            filter_wh = self.filter_module.filter_wh()
+
+            params_dict_ir = self.filter_module.get_updated_params_image_recognition(params_dict_ir)
+            #print(params_dict_ir)
         else:
             debug_images = []
 
@@ -136,10 +138,10 @@ class FrameProcessor:
         size_min_above_one = 20 * 100
 
         if self.filter_module:
-            size_min = self.filter_module.get_min_size_rectangle_one()
-            size_min_above_one = self.filter_module.get_min_size_rectangle_one()
-            desired_aspect = self.filter_module.get_desired_aspect_digit()
-            digit_one_aspect = self.filter_module.get_desired_aspect_digit_one()
+            size_min = params_dict_ir['min_size_rectangle_one']
+            size_min_above_one = params_dict_ir['min_size_rectangle']
+            desired_aspect = params_dict_ir['desired_aspect_digit']
+            digit_one_aspect = params_dict_ir['desired_aspect_digit_one']
         # The allowed buffer in the aspect when determining digits
         aspect_buffer = 0.20
 
@@ -171,7 +173,7 @@ class FrameProcessor:
             if w > h:
                 if self.debug:
                     cv2.rectangle(self.img, (x, y), (x + w, y + h), (0, 150, 255), 2)
-                if filter_wh:
+                if params_dict_ir['filter_width>height']:
                     continue
 
             # If the contour is of decent size and fits the aspect ratios we want, we'll save it
@@ -268,14 +270,16 @@ class FrameProcessor:
 
         output_float = 0
         try:
-            output_float = float(output) * final_multipier
+            output_float = float(output) * params_dict_ir['final_number_multiplier']
         except:
             print("output failed to parse:", output)
+            # TODO print exception
             pass
 
         percentage_full = -100
-        if countours_to_percentage_function:
-            percentage_full = countours_to_percentage_function(len(potential_digits))
+        if params_dict_ir[key_countours_function]:
+            fun = params_dict_ir[key_countours_function]
+            percentage_full = fun(len(potential_digits))
         
         # Log some information    
         if self.debug:

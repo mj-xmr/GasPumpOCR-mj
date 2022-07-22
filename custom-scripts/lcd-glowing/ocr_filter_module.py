@@ -4,36 +4,25 @@ import os
 import sys
 from pathlib import Path
 
-def get_updated_params(params_dict):
-    params_dict['erode'] = 1
-    params_dict['angle_degrees'] = 3
+def get_updated_params_image_processing(params_dict_ip):
+    params_dict_ip['erode'] = 1
+    params_dict_ip['angle_degrees'] = 3
     
     masks = []
     masks.append((475, 775, 240, 190))
-    
-    params_dict['masks'] = masks
-    return params_dict
 
-def get_min_size_rectangle_one():
-    return 10 * 11
+    params_dict_ip['masks'] = masks
+    return params_dict_ip
 
-def get_min_size_rectangle_():
-    return 10 * 20
+def get_updated_params_image_recognition(params_dict_ir):
+    params_dict_ir['min_size_rectangle_one']    = 10 * 11
+    params_dict_ir['min_size_rectangle']        = 10 * 20
+    params_dict_ir['desired_aspect_digit_one']  = 0.26
+    params_dict_ir['desired_aspect_digit']      = 0.46
+    params_dict_ir['final_number_multiplier']   = 0.1
+    params_dict_ir['filter_width>height']       = True
 
-def get_desired_aspect_digit():
-    return 0.46
-
-def get_desired_aspect_digit_one():
-    return 0.26
-
-def get_final_number_multiplier():
-    return 0.1
-
-def filter_wh():
-    return True
-
-def get_countours_to_percentage_full(num_countours):
-    return -100
+    return params_dict_ir
 
 def test():
     print("test OCR filter_module glowing lcd")

@@ -4,7 +4,7 @@ import os
 import sys
 from pathlib import Path
 
-def get_updated_params(params_dict):
+def get_updated_params_image_processing(params_dict):
     params_dict['erode'] = 1
     params_dict['blur'] = 1
     params_dict['exposure'] = 1.0
@@ -12,7 +12,7 @@ def get_updated_params(params_dict):
     params_dict['loV'] = 85
     params_dict['hiS'] = 11
     params_dict['hiV'] = 255
-    
+
     #params_dict['angle_degrees'] = 0
     
     masks = []
@@ -21,23 +21,15 @@ def get_updated_params(params_dict):
     params_dict['masks'] = masks
     return params_dict
 
-def get_min_size_rectangle_one():
-    return 20
+def get_updated_params_image_recognition(params_dict_ir):
+    params_dict_ir['min_size_rectangle_one']    = 20
+    params_dict_ir['min_size_rectangle']        = 20
+    params_dict_ir['desired_aspect_digit_one']  = 0.3
+    params_dict_ir['desired_aspect_digit']      = 1.65
+    params_dict_ir['filter_width>height']       = False
+    params_dict_ir['countours_to_percentage_function'] = get_countours_to_percentage_full
 
-def get_min_size_rectangle_():
-    return 20
-
-def get_desired_aspect_digit():
-    return 1.65
-
-def get_desired_aspect_digit_one():
-    return 0.3
-
-def get_final_number_multiplier():
-    return 1
-
-def filter_wh():
-    return False
+    return params_dict_ir
 
 def get_countours_to_percentage_full(num_countours):
     irrelevant_countours = 1    # The "power on" countour, that has to be subtracted.
